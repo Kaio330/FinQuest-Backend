@@ -49,11 +49,22 @@ public class JogadorService {
         return jogadorRepository.save(jogador);
     }
 
+    public boolean temXpSuficiente(Long jogadorId, int nivelDaLicao) {
+        Jogador jogador = jogadorRepository.findById(jogadorId)
+                .orElseThrow(() -> new RuntimeException("Jogador não encontrado"));
+
+        int xpMinimo = (nivelDaLicao - 1) * 100;
+        return jogador.getXpPlayer() >= xpMinimo;
+    }
+
     private void verificarNivel(Jogador jogador) {
-        int xpParaProximoNivel = jogador.getNivelAtual() * 100;
-        while (jogador.getXpPlayer() >= xpParaProximoNivel) {
-            jogador.setNivelAtual(jogador.getNivelAtual() + 1);
-            xpParaProximoNivel = jogador.getNivelAtual() * 100;
+        while (true) {
+            int xpParaProximoNivel = jogador.getNivelAtual() * 100;
+            if (jogador.getXpPlayer() >= xpParaProximoNivel) {
+                jogador.setNivelAtual(jogador.getNivelAtual() + 1);
+            } else {
+                break;
+            }
         }
     }
 }
