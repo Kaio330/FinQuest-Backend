@@ -21,28 +21,18 @@ public class JogadorController {
     @PostMapping("/cadastrar")
     public ResponseEntity<JogadorResponse> cadastrar(@RequestBody @Valid Jogador jogador) {
         Jogador novo = jogadorService.cadastrar(jogador);
-        JogadorResponse response = new JogadorResponse(
-                novo.getId(), novo.getNomePlayer(), novo.getEmail(),
-                novo.getNivelAtual(), novo.getXpPlayer(), novo.getVidasJogador()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(novo));
     }
 
     @GetMapping
     public ResponseEntity<List<JogadorResponse>> listarTodos() {
-        List<Jogador> jogadores = jogadorService.listarTodos();
-        List<JogadorResponse> response = jogadores.stream()
-                .map(j -> new JogadorResponse(j.getId(), j.getNomePlayer(), j.getEmail(),
-                        j.getNivelAtual(), j.getXpPlayer(), j.getVidasJogador()))
-                .toList();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(jogadorService.listarTodos().stream().map(this::toResponse).toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<JogadorResponse> buscarPorId(@PathVariable Long id) {
         return jogadorService.buscarPorId(id)
-                .map(j -> new JogadorResponse(j.getId(), j.getNomePlayer(), j.getEmail(),
-                        j.getNivelAtual(), j.getXpPlayer(), j.getVidasJogador()))
+                .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -50,12 +40,7 @@ public class JogadorController {
     @PatchMapping("/{id}/xp")
     public ResponseEntity<JogadorResponse> darXp(@PathVariable Long id, @RequestParam int quantidade) {
         try {
-            Jogador atualizado = jogadorService.darXp(id, quantidade);
-            JogadorResponse response = new JogadorResponse(
-                    atualizado.getId(), atualizado.getNomePlayer(), atualizado.getEmail(),
-                    atualizado.getNivelAtual(), atualizado.getXpPlayer(), atualizado.getVidasJogador()
-            );
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(toResponse(jogadorService.darXp(id, quantidade)));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -65,5 +50,14 @@ public class JogadorController {
     public ResponseEntity<Void> deletar(@PathVariable long id) {
         jogadorService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private JogadorResponse toResponse(Jogador j) {
+        return new JogadorResponse(
+                j.getId(), j.getNomePlayer(), j.getEmail(),
+                j.getNivelAtual(), j.getXpPlayer(), j.getVidasJogador(),
+                j.getCep(), j.getLogradouro(), j.getNumero(),
+                j.getComplemento(), j.getBairro(), j.getCidade(), j.getEstado()
+        );
     }
 }

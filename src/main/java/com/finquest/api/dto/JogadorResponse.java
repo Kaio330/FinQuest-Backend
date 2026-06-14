@@ -6,5 +6,12 @@ public record JogadorResponse(
         String email,
         int nivelAtual,
         int xpPlayer,
-        int vidasJogador
+        int vidasJogador,
+        String cep,
+        String logradouro,
+        String numero,
+        String complemento,
+        String bairro,
+        String cidade,
+        String estado
 ) {}

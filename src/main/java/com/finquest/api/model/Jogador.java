@@ -28,4 +28,13 @@ public class Jogador {
     private int nivelAtual=1;
     private int xpPlayer=0;
     private int vidasJogador=1;
+
+    // Endereço
+    private String cep;
+    private String logradouro;
+    private String numero;
+    private String complemento;
+    private String bairro;
+    private String cidade;
+    private String estado;
 }
